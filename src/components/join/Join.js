@@ -31,9 +31,9 @@ const Join = () => {
           onClick={(e) => {
             if (
               !name ||
-              name.trim().length == 0 ||
+              name.trim().length === 0 ||
               !room ||
-              room.trim().length == 0
+              room.trim().length === 0
             )
               e.preventDefault();
           }}
