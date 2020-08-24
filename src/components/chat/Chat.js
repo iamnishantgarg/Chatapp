@@ -6,6 +6,8 @@ let socket;
 const Chat = ({ location }) => {
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     const { name, room } = queryString.parse(location.search);
@@ -14,14 +16,40 @@ const Chat = ({ location }) => {
     setName(name);
     setRoom(room);
     socket = io(ENDPOINT, { path: "/chatting" });
-    socket.emit("join", { name, room });
-    //console.log(socket);
+    socket.emit("join", { name, room }, (err) => {
+      if (err) console.log(err);
+    });
     return () => {
       socket.emit("disconnect");
       socket.off();
     };
   }, [location.search]);
-  return <div>Chat</div>;
+  useEffect(() => {
+    socket.on("message", (message) => {
+      setMessages([...messages, message]);
+    });
+  }, [messages]);
+  const sendMessage = (e) => {
+    e.preventDefault();
+    socket.emit("sendMessage", message, () => {
+      setMessage("");
+    });
+  };
+  console.log(message);
+  console.log(messages);
+  return (
+    <div className="outerContainer">
+      <div className="container">
+        <input
+          type="text"
+          placeholder="send some message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyPress={(e) => (e.key === "Enter" ? sendMessage(e) : null)}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default Chat;
