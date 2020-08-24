@@ -34,6 +34,7 @@ io.on("connection", (socket) => {
     callback();
   });
   socket.on("disconnect", () => {
+    removeUser(socket.id);
     console.log("user disconnected");
   });
 });
